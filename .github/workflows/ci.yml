@@ -13,16 +13,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Use Node.js 20
+    - name: Use Node.js 25
       uses: actions/setup-node@v4
       with:
-        node-version: 20
-        # We are removing the cache line for now to stop the "Path Not Found" error
-        # Once the build works, we can add it back safely.
+        node-version: 25
+        # This points to the package-lock inside your my-app folder
+        cache-dependency-path: 'my-app/package-lock.json'
 
-    - name: Install Dependencies
-      # The quotes around the folder name are CRITICAL because of the space
+    - name: Install and Build
+      # This runs the commands specifically inside the my-app folder
       run: |
-        cd "frontend practice"
+        cd my-app
         npm install
-        npm run build --if-present
+        npm run build
