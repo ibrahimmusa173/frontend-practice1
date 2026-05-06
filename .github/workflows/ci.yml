@@ -6,16 +6,17 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# This environment variable clears the Node.js warning you received
 env:
+  # This fixes the yellow "Node.js 20" warning in your screenshot
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     defaults:
       run:
+        # This fixes the "ENOENT" error by telling GitHub your code is in 'my-app'
         working-directory: my-app
 
     steps:
@@ -25,16 +26,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          # Updated to 24 to match the warning recommendation
-          node-version: '24' 
+          node-version: '24'
           cache: 'npm'
-          # We use a 'glob' pattern to find the lock file anywhere in the repo
-          cache-dependency-path: '**/package-lock.json'
+          # We use package.json here because the runner is having trouble finding your lockfile
+          cache-dependency-path: my-app/package.json
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run tests
-        # If this step still fails, it means your code has no tests yet.
-        # In that case, you can temporarily change this line to: run: npm run build
-        run: npm test
+      - name: Verify Build
+        # CRITICAL: Your package.json DOES NOT have a "test" script. 
+        # Running "npm test" will always fail. Use "npm run build" instead.
+        run: npm run build
