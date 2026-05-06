@@ -1,10 +1,8 @@
 name: Node.js CI
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+# CHANGE 1: Add this environment variable at the top to stop the deprecation warning
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -13,16 +11,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Use Node.js 20
+    - name: Use Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20
-        # We are removing the cache line for now to stop the "Path Not Found" error
-        # Once the build works, we can add it back safely.
+        # CHANGE 2: Update the version here to 24
+        node-version: '24' 
+        cache: 'npm'
+        # CHANGE 3: Fix the path error by pointing to your subfolder
+        cache-dependency-path: './frontend practice/package-lock.json'
 
     - name: Install Dependencies
-      # The quotes around the folder name are CRITICAL because of the space
-      run: |
-        cd "frontend practice"
-        npm install
-        npm run build --if-present
+      # Make sure the command runs inside your subfolder
+      run: npm install
+      working-directory: './frontend practice'
+
+    - name: Run Build
+      run: npm run build --if-present
+      working-directory: './frontend practice'
