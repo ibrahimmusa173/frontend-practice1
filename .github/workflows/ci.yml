@@ -6,11 +6,14 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# This environment variable clears the Node.js warning you received
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    # This tells GitHub to look inside the 'my-app' folder for all steps
     defaults:
       run:
         working-directory: my-app
@@ -22,14 +25,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Updated to 24 to match the warning recommendation
+          node-version: '24' 
           cache: 'npm'
-          cache-dependency-path: my-app/package-lock.json
+          # We use a 'glob' pattern to find the lock file anywhere in the repo
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Install dependencies
         run: npm install
 
       - name: Run tests
-        # Note: If you don't have tests yet, you can change this to 'npm run build' 
-        # to at least check if the project compiles.
+        # If this step still fails, it means your code has no tests yet.
+        # In that case, you can temporarily change this line to: run: npm run build
         run: npm test
