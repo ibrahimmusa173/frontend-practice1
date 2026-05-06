@@ -1,0 +1,28 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        # We are removing the cache line for now to stop the "Path Not Found" error
+        # Once the build works, we can add it back safely.
+
+    - name: Install Dependencies
+      # The quotes around the folder name are CRITICAL because of the space
+      run: |
+        cd "frontend practice"
+        npm install
+        npm run build --if-present
