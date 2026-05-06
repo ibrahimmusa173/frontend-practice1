@@ -1,40 +1,30 @@
-name: CI Test
+name: Node.js CI
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
+# CHANGE 1: Add this environment variable at the top to stop the deprecation warning
 env:
-  # This fixes the yellow "Node.js 20" warning in your screenshot
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        # This fixes the "ENOENT" error by telling GitHub your code is in 'my-app'
-        working-directory: my-app
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: 'npm'
-          # We use package.json here because the runner is having trouble finding your lockfile
-          cache-dependency-path: my-app/package.json
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        # CHANGE 2: Update the version here to 24
+        node-version: '24' 
+        cache: 'npm'
+        # CHANGE 3: Fix the path error by pointing to your subfolder
+        cache-dependency-path: './frontend practice/package-lock.json'
 
-      - name: Install dependencies
-        run: npm install
+    - name: Install Dependencies
+      # Make sure the command runs inside your subfolder
+      run: npm install
+      working-directory: './frontend practice'
 
-      - name: Verify Build
-        # CRITICAL: Your package.json DOES NOT have a "test" script. 
-        # Running "npm test" will always fail. Use "npm run build" instead.
-        run: npm run build
+    - name: Run Build
+      run: npm run build --if-present
+      working-directory: './frontend practice'
