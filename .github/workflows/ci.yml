@@ -17,11 +17,12 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 25
-        # This points to the package-lock inside your my-app folder
+        # This tells GitHub exactly where your lock file is for caching
+        cache: 'npm'
         cache-dependency-path: 'my-app/package-lock.json'
 
     - name: Install and Build
-      # This runs the commands specifically inside the my-app folder
+      # We use 'cd my-app' because that is where your package.json is
       run: |
         cd my-app
         npm install
