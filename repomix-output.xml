@@ -41,6 +41,7 @@ The content is organized as follows:
 
 <directory_structure>
 .gitattributes
+.github/workflows/ci.yml
 my-app/.gitignore
 my-app/eslint.config.js
 my-app/index.html
@@ -61,19 +62,10 @@ my-app/src/index.css
 my-app/src/main.jsx
 my-app/tailwind.config.js
 my-app/vite.config.js
-package.json
 </directory_structure>
 
 <files>
 This section contains the contents of the repository's files.
-
-<file path="package.json">
-{
-  "dependencies": {
-    "repomix": "^1.14.0"
-  }
-}
-</file>
 
 <file path=".gitattributes">
 # Auto detect text files and perform LF normalization
@@ -540,6 +532,37 @@ function App() {
 }
 
 export default App;
+</file>
+
+<file path=".github/workflows/ci.yml">
+name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js 20
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        # We are removing the cache line for now to stop the "Path Not Found" error
+        # Once the build works, we can add it back safely.
+
+    - name: Install Dependencies
+      # The quotes around the folder name are CRITICAL because of the space
+      run: |
+        cd "frontend practice"
+        npm install
+        npm run build --if-present
 </file>
 
 </files>
